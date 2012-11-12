@@ -1,0 +1,147 @@
+name: FactionCore
+main: net.illusiononline.factioncore.FactionCore
+version: 1.0
+softdepend: [EmeraldEconomy]
+commands:
+    faction:
+        description: All faction commands.
+        usage: /faction [cmd]
+        permission: factioncore.faction.info
+permissions:
+    factioncore.*:
+        description: All factioncore commands and permissions.
+        children:
+        factioncore.faction.*: true
+    factioncore.admin:
+        description: All commands and permissions used by admins.
+        children:
+            factioncore.faction.chat.other: true
+            factioncore.faction.home.set.other: true
+            factioncore.faction.home.other: true
+            factioncore.faction.home.clear.other: true
+            factioncore.faction.money.check.other: true
+            factioncore.faction.send.other: true
+            factioncore.faction.take.other: true
+            factioncore.faction.flag.other: true
+    factioncore.basic:
+        description: All basic commands and permissions.
+        children:
+            factioncore.faction.create: true
+            factioncore.faction.disband: true
+            factioncore.faction.join: true
+            factioncore.faction.invite: true
+            factioncore.faction.ally: true
+            factioncore.faction.enemy: true
+            factioncore.faction.kick: true
+            factioncore.faction.chat: true
+            factioncore.faction.home.set: true
+            factioncore.faction.home: true
+            factioncore.faction.home.clear: true
+            factioncore.faction.money.check: true
+            factioncore.faction.send: true
+            factioncore.faction.take: true
+            factioncore.faction.flag: true
+            factioncore.faction.true: true
+    factioncore.faction.*:
+        description: All faction commands and permissions.
+        children:
+            factioncore.faction.create: true
+            factioncore.faction.disband: true
+            factioncore.faction.join: true
+            factioncore.faction.invite: true
+            factioncore.faction.ally: true
+            factioncore.faction.enemy: true
+            factioncore.faction.kick: true
+            factioncore.faction.chat: true
+            factioncore.faction.chat.other: true
+            factioncore.faction.home.set: true
+            factioncore.faction.home.set.other: true
+            factioncore.faction.home: true
+            factioncore.faction.home.other: true
+            factioncore.faction.home.clear: true
+            factioncore.faction.home.clear.other: true
+            factioncore.faction.money.check: true
+            factioncore.faction.money.check.other: true
+            factioncore.faction.send: true
+            factioncore.faction.send.other: true
+            factioncore.faction.take: true
+            factioncore.faction.take.other: true
+            factioncore.faction.flag: true
+            factioncore.faction.flag.other: true
+            factioncore.faction.info: true
+    factioncore.faction.info:
+        description: Get a faction's info.
+        default: true
+    factioncore.faction.create:
+        description: Create a faction.
+        default: true
+    factioncore.faction.disband:
+        description: Disband a faction.
+        default: true
+    factioncore.faction.join:
+        description: Join a faction.
+        default: true
+    factioncore.faction.leave:
+        description: Leave a faction.
+        default: true
+    factioncore.faction.invite:
+        description: Invite Player to a faction.
+        default: true
+    factioncore.faction.ally:
+        description: Ally a faction.
+        default: true
+    factioncore.faction.enemy:
+        description: Enemy a faction.
+        default: true
+    factioncore.faction.kick:
+        description: Kick a player from a faction.
+        default: true
+    factioncore.faction.chat:
+        description: Join a faction's chat.
+        default: true
+    factioncore.faction.chat.other:
+        description: Join another faction's chat.
+        default: op
+    factioncore.faction.home.set:
+        description: Set a faction's home.
+        default: true
+    factioncore.faction.home.set.other:
+        description: Set another faction's home.
+        default: op
+    factioncore.faction.home:
+        description: Go to a faction's home.
+        default: true
+    factioncore.faction.home.other:
+        description: Go to another faction's home.
+        default: op
+    factioncore.faction.home.clear:
+        description: Clear a faction's.
+        default: true
+    factioncore.faction.home.clear.other:
+        description: Clear another faction's home.
+        default: op
+    factioncore.faction.money.check:
+        description: Check a faction's balance.
+        default: true
+    factioncore.faction.money.check.other:
+        description: Check another faction's balance.
+        default: op
+    factioncore.faction.send:
+        description: Send a faction money.
+        default: true
+    factioncore.faction.send.other:
+        description: Send another faction money.
+        default: op
+    factioncore.faction.take:
+        description: Withdraw money from a faction.
+        default: true
+    factioncore.faction.take.other:
+        description: Withdraw money from another faction.
+        default: op
+    factioncore.faction.flag:
+        description: Set a flag for a faction.
+        default: true
+    factioncore.faction.flag.other:
+        description: Set a flag for another faction.
+        default: op
+                                                                                                                                                                    
