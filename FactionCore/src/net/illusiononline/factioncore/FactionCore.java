@@ -33,7 +33,6 @@ public class FactionCore extends JavaPlugin{
 	public static MySQLManager getSqlManager(){return sqlmanager;}
 	public static FactionManager getFactionManager(){return factionmanager;}
 	 
-	public Logger getLogger(){return log;}
 	public boolean getEconomyIsPresent(){return economy_is_present;}
 	public net.illusiononline.EmeraldEconomy.MySQLManager getEconomySQLManager(){return economy_sqlmanager;}
 }
