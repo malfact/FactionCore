@@ -1,0 +1,13 @@
+#Default Configuration File for FactionCore -malfact
+backends:
+  mysql:
+    #Database hostname | i.e: example.com
+    hostname: localhost
+    #Database port
+    port: 3306
+    #Database name
+    database: minecraft
+    #Username
+    user: root
+    #Password
+    password: a1b2

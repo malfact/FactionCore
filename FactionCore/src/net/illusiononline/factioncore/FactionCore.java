@@ -15,6 +15,12 @@ public class FactionCore extends JavaPlugin{
 	
 	@Override
 	public void onEnable() { 
+		
+		/* Init Config */
+		getConfig().options().copyDefaults(true);
+		saveConfig();
+		/* End Init Config */
+		
 		if (EmeraldEconomy.getSQLManager() != null) {
 			economy_sqlmanager = EmeraldEconomy.getSQLManager();
 			log.info("Economy plugin is present: Allowing advanced features!");
@@ -22,12 +28,18 @@ public class FactionCore extends JavaPlugin{
 		} else {
 			log.info("Economy plugin is not present: Disallowing advanced features!");
 		}
+		
 		sqlmanager = new MySQLManager(this);
 		factionmanager = new FactionManager(this);
 		getCommand("faction").setExecutor(new FactionCommandExecutor());
+		
+		if (sqlmanager.getMySQL() == null)
+			getPluginLoader().disablePlugin(this);
 	}
 	 @Override
 	public void onDisable() {  
+		 if (sqlmanager.getMySQL() != null)
+				sqlmanager.getMySQL().close();
 	}
 
 	public static MySQLManager getSqlManager(){return sqlmanager;}

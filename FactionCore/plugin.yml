@@ -15,6 +15,8 @@ permissions:
     factioncore.admin:
         description: All commands and permissions used by admins.
         children:
+            factioncore.faction.join.override: true
+            factioncore.faction.kick.override: true
             factioncore.faction.chat.other: true
             factioncore.faction.home.set.other: true
             factioncore.faction.home.other: true
@@ -48,10 +50,12 @@ permissions:
             factioncore.faction.create: true
             factioncore.faction.disband: true
             factioncore.faction.join: true
+            factioncore.faction.join.override: true
             factioncore.faction.invite: true
             factioncore.faction.ally: true
             factioncore.faction.enemy: true
             factioncore.faction.kick: true
+            factioncore.faction.kick.override: true
             factioncore.faction.chat: true
             factioncore.faction.chat.other: true
             factioncore.faction.home.set: true
@@ -81,6 +85,9 @@ permissions:
     factioncore.faction.join:
         description: Join a faction.
         default: true
+    factioncore.faction.join.override:
+        description: Join any faction.
+        default: op
     factioncore.faction.leave:
         description: Leave a faction.
         default: true
@@ -96,6 +103,9 @@ permissions:
     factioncore.faction.kick:
         description: Kick a player from a faction.
         default: true
+    factioncore.faction.kick:
+        description: Kick a player from a faction.
+        default: op
     factioncore.faction.chat:
         description: Join a faction's chat.
         default: true

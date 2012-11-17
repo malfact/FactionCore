@@ -11,11 +11,11 @@ import lib.PatPeter.SQLibrary.MySQL;
 
 public class MySQLManager {
 
-	String hostname	= "localhost";
-	String portnmbr	= "3306";
-	String database	= "MineLink";
-	String username = "minelink";
-	String password = "1orangekiwimja";
+	String hostname	= "";
+	String portnmbr	= "";
+	String database	= "";
+	String username = "";
+	String password = "";
 	
 	FactionCore plugin;
 	private MySQL sql;
@@ -25,6 +25,12 @@ public class MySQLManager {
 	
 	public MySQLManager(FactionCore plugin){
 		this.plugin = plugin;
+		
+		if (!initSetData()){
+			plugin.getLogger().info("[EmeraldEconomy] Unable to get database!");
+			return;
+		}
+		
 		economy_is_present = plugin.getEconomyIsPresent();
 		sql = new MySQL(plugin.getLogger(),"[FactionCore]",hostname,portnmbr,database,username,password);
 		this.Setup();
@@ -335,5 +341,25 @@ public class MySQLManager {
             plugin.getLogger().info(e.getMessage());
             plugin.getPluginLoader().disablePlugin(plugin);
 		}
+	}
+	
+	private boolean initSetData(){
+
+		this.hostname = plugin.getConfig().getString("backends.mysql.hostname");
+		if (hostname == null || hostname.isEmpty()) return false;
+
+		this.portnmbr = plugin.getConfig().getInt("backends.mysql.port")+"";
+		if (portnmbr == null || portnmbr.isEmpty()) return false;
+
+		this.database = plugin.getConfig().getString("backends.mysql.database")+"";
+		if (database == null || database.isEmpty()) return false;
+
+		this.username = plugin.getConfig().getString("backends.mysql.user");
+		if (username == null || username.isEmpty()) return false;
+
+		this.password = plugin.getConfig().getString("backends.mysql.password");
+		if (password == null || password.isEmpty()) return false;
+		
+		return true;
 	}
 }

@@ -2,6 +2,7 @@ package net.illusiononline.factioncore;
 
 import net.illusiononline.factioncore.hashmaps.*;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class FactionManager {
@@ -14,6 +15,26 @@ public class FactionManager {
 		this.plugin = plugin;
 		playerconfirm = new PlayerConfirmationHashMap(plugin);
 		permissions = new PermissionHashMap();
+	}
+	
+	public boolean isFactionAdmin(String player, String faction){
+		String list[] = (FactionCore.getSqlManager().getListedUnit(faction, "owner")+" "+FactionCore.getSqlManager().getListedUnit(faction, "admin")).split(" ");
+		for (int i=0;i <= list.length-1;i++){
+			if (list[i].trim().equalsIgnoreCase(player)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isFactionOwner(String player, String faction){
+		String list[] = (FactionCore.getSqlManager().getListedUnit(faction, "owner")).split(" ");
+		for (int i=0;i <= list.length-1;i++){
+			if (list[i].trim().equalsIgnoreCase(player)){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public void factionInfo(Player player, String name){
@@ -81,6 +102,14 @@ public class FactionManager {
 			}
 		}
 		if (FactionCore.getSqlManager().getFlag(name, "owner").equalsIgnoreCase("")){
+			if (name.length() < 5) {
+				player.sendMessage(ChatColor.RED+"Faction name must be longer than 5 characters!");
+				return false;
+			}
+			if (containsIllegalCharacters(name)) {
+				player.sendMessage(ChatColor.RED+"Faction name must not have illegal characters!");
+				return false;
+			}
 			player.sendMessage(ChatColor.GOLD+"Say \"/faction create "+name+"\" again to create the faction!\n" +
 					"It will cost $500!");
 			playerconfirm.addConfirmation(player.getName(), "create "+name);
@@ -113,9 +142,8 @@ public class FactionManager {
 					}
 				}
 			}
-			if (FactionCore.getSqlManager().getFlag(faction, "owner").equalsIgnoreCase(player.getName()) ||
-					player.hasPermission(permissions.getPermission("disbandother"))){
-				if (name.equalsIgnoreCase("")|| name == null)
+			if (isFactionOwner(player.getName(), faction) || player.hasPermission(permissions.getPermission("disbandother"))){
+				if (name.equalsIgnoreCase(""))
 					player.sendMessage(ChatColor.GOLD+"Say \"/faction disband\" again to disband the faction!");
 				else
 					player.sendMessage(ChatColor.GOLD+"Say \"/faction disband "+faction+"\" again to disband the faction!");
@@ -173,13 +201,8 @@ public class FactionManager {
 			can_invite = true;
 		if (FactionCore.getSqlManager().getFlag(faction, "invite").equalsIgnoreCase("true"))
 			can_invite = true;
-		String list[] = (FactionCore.getSqlManager().getListedUnit(faction, "owner")+", "+FactionCore.getSqlManager().getListedUnit(faction, "admin")).split(",");
-		for (int i=0;i <= list.length-1;i++){
-			if (list[i].trim().equalsIgnoreCase(player.getName())){
-				can_invite = true;
-				break;
-			}
-		}
+		if (isFactionAdmin(player.getName(), faction))
+			can_invite = true;
 		
 		if (can_invite) {
 			playerconfirm.addConfirmation(target.getName(), "join "+faction);
@@ -215,16 +238,9 @@ public class FactionManager {
 			return false;
 		}
 		
-		boolean can_kick = false;
-		String list[] = (FactionCore.getSqlManager().getListedUnit(faction, "owner")+", "+FactionCore.getSqlManager().getListedUnit(faction, "admin")).split(" ");
-		for (int i=0;i <= list.length-1;i++){
-			if (list[i].trim().equalsIgnoreCase(player.getName())){
-				can_kick = true;
-				break;
-			}
-		}
+		boolean can_kick = isFactionAdmin(player.getName(), faction);
 		
-		if (can_kick) {
+		if (can_kick || player.hasPermission(permissions.getPermission("kickoverride"))) {
 			FactionCore.getSqlManager().removeListedUnit(faction, "owner", name);
 			FactionCore.getSqlManager().removeListedUnit(faction, "admin", name);
 			FactionCore.getSqlManager().removeListedUnit(faction, "member", name);
@@ -261,12 +277,9 @@ public class FactionManager {
 			}
 			return false;
 		}
-		String list[] = FactionCore.getSqlManager().getListedUnit(faction, "owner").split(",");
-		for (int i=0;i <= list.length-1;i++){
-			if (list[i].trim().equalsIgnoreCase(player.getName())){
-				player.sendMessage(ChatColor.RED+"You can not leave while you are an Owner!");
-				return false;
-			}
+		if (isFactionOwner(player.getName(), faction)) {
+			player.sendMessage(ChatColor.RED+"You can not leave while you are an Owner!");
+			return false;
 		}
 		if (name.equalsIgnoreCase("")) {
 			player.sendMessage(ChatColor.GOLD+"Say \"/faction leave\" again to leave the faction!");
@@ -278,4 +291,109 @@ public class FactionManager {
 		return false;
 	}
 	
+	public boolean setHome(Player player, String name){
+		if (name == null) name = "";
+		if (player == null) return false;
+		
+		String faction = "";
+		if (name.equalsIgnoreCase(""))
+			faction = FactionCore.getSqlManager().getFaction(player.getName());
+		else
+			faction = FactionCore.getSqlManager().getFaction(name);
+		
+		if (faction.equalsIgnoreCase("")){
+			if (name.equalsIgnoreCase(""))
+				player.sendMessage(ChatColor.RED+"You are not in a faction!");
+			else
+				player.sendMessage(ChatColor.RED+"Invalid faction!");
+			return false;
+		}
+		
+		String loc = player.getLocation().getWorld().getName()+","+
+				player.getLocation().getX()+","+
+				player.getLocation().getY()+","+
+				player.getLocation().getZ()+","+
+				player.getLocation().getYaw()+","+
+				player.getLocation().getPitch()+"";
+		
+		boolean can_set = isFactionAdmin(player.getName(), faction);
+		
+		if (can_set || player.hasPermission(permissions.getPermission("sethomeother"))) {
+			boolean w = FactionCore.getSqlManager().setFlag(faction, "home", loc);
+			if (w) {
+				player.sendMessage(ChatColor.AQUA+faction+"'s home set!");
+				return true;
+			} else 
+				player.sendMessage(ChatColor.RED+"Unable to set faction's home!");
+		} else {
+			player.sendMessage(ChatColor.RED+"You don't have permission to set the faction's home!");
+		}
+		
+		return false;
+	}
+	
+	public boolean teleportHome(Player player, String name){
+		if (name == null) name = "";
+		if (player == null) return false;
+		
+		String faction = "";
+		if (name.equalsIgnoreCase(""))
+			faction = FactionCore.getSqlManager().getFaction(player.getName());
+		else
+			faction = FactionCore.getSqlManager().getFaction(name);
+		
+		if (faction.equalsIgnoreCase("")){
+			if (name.equalsIgnoreCase(""))
+				player.sendMessage(ChatColor.RED+"You are not in a faction!");
+			else
+				player.sendMessage(ChatColor.RED+"Invalid faction!");
+			return false;
+		}
+		
+		String loc[] = FactionCore.getSqlManager().getFlag(faction, "home").split(" ");
+		if (loc.length < 6) {
+			player.sendMessage(ChatColor.RED+faction+" does not have a home!");
+			return false;
+		}
+		if (plugin.getServer().getWorld(loc[0]) == null) {
+			player.sendMessage(ChatColor.RED+"Unable to define home!");
+			return false;
+		}
+		double	a = 0, b = 0, c = 0;
+		float	y = 0, p = 0;
+		try {
+			a = Double.parseDouble(loc[1]);
+			b = Double.parseDouble(loc[2]);
+			c = Double.parseDouble(loc[3]);
+			y = Float.parseFloat(loc[4]);
+			p = Float.parseFloat(loc[5]);
+		} catch (NumberFormatException e) {
+			player.sendMessage(ChatColor.RED+"Unable to define home!");
+			plugin.getLogger().severe("[FactionCore]"+e.getMessage());
+			return false;
+		}
+		Location home = new Location(plugin.getServer().getWorld(loc[0]),
+				a, b, c, y, p);
+		player.sendMessage(ChatColor.AQUA+"Going to "+faction+"'s home!");
+		player.teleport(home);
+		return true;
+	}
+	
+	private boolean containsIllegalCharacters(String string){
+		String allowedcharacters[] = {
+				"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r",
+				"s","t","u","v","w","x","y","z","0","1","2","3","4","5","6","7","8","9"};
+		for (int i=0; i < string.length(); i++) {
+			boolean allowed = false;
+			for (int j=0; j < allowedcharacters.length; j++){
+				if (string.charAt(i) == allowedcharacters[j].charAt(0)){
+					allowed = true;
+					break;
+				}	
+			}
+			if (!allowed)
+				return false;
+		}
+		return true;
+	}
 }
