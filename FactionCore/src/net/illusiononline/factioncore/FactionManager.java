@@ -19,7 +19,7 @@ public class FactionManager {
 	public void factionInfo(Player player, String name){
 		if (name == null) name = "";
 		String faction = "";
-		if (name.equalsIgnoreCase("") || name == null)
+		if (name.equalsIgnoreCase(""))
 			faction = FactionCore.getSqlManager().getFaction(player.getName());
 		else
 			faction = FactionCore.getSqlManager().getFaction(name);

@@ -34,18 +34,18 @@ public class FactionCommandExecutor implements CommandExecutor{
 				case 1:
 					if (args[0].equalsIgnoreCase("help")){
 						sender.sendMessage(ChatColor.AQUA+"|FactionCore 'faction' Commands|\n"+
-											"/faction help\n" +
-											"/faction list [#]\n" +
-											"/faction create <name>\n" +
-											"/faction disband [name]\n" +
-											"/faction join <name>\n" +
-											"/faction leave [name]\n" +
-											"/faction invite <name>\n" +
+											ChatColor.GREEN+"/faction help\n" +
+											ChatColor.GREEN+"/faction list [#]\n" +
+											ChatColor.GREEN+"/faction create <name>\n" +
+											ChatColor.GREEN+"/faction disband [name]\n" +
+											ChatColor.GREEN+"/faction join <name>\n" +
+											ChatColor.GREEN+"/faction leave [name]\n" +
+											ChatColor.GREEN+"/faction invite <name>\n" +
 											"/faction ally <name>\n" +
 											"/faction unally <name>\n" +
 											"/faction enemy <name>\n" +
 											"/faction unenemy <name>\n" +
-											"/faction kick <name>\n" +
+											ChatColor.GREEN+"/faction kick <name>\n" +
 											"/faction chat <join/leave> [name]\n" +
 											"/faction sethome [name]\n" +
 											"/faction home [name]\n" +

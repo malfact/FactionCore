@@ -11,12 +11,12 @@ public class FactionCore extends JavaPlugin{
 	private static MySQLManager sqlmanager;
 	private boolean economy_is_present = false;
 	private static FactionManager factionmanager;
-	private net.illusiononline.EmeraldEconomy.MySQLManager economy_sqlmanager;
+	private net.illusiononline.EmeraldEconomy.backends.MySQLManager economy_sqlmanager;
 	
 	@Override
 	public void onEnable() { 
-		economy_sqlmanager = EmeraldEconomy.getSQLManager();
-		if (economy_sqlmanager != null) {
+		if (EmeraldEconomy.getSQLManager() != null) {
+			economy_sqlmanager = EmeraldEconomy.getSQLManager();
 			log.info("Economy plugin is present: Allowing advanced features!");
 			economy_is_present = true;
 		} else {
@@ -34,6 +34,6 @@ public class FactionCore extends JavaPlugin{
 	public static FactionManager getFactionManager(){return factionmanager;}
 	 
 	public boolean getEconomyIsPresent(){return economy_is_present;}
-	public net.illusiononline.EmeraldEconomy.MySQLManager getEconomySQLManager(){return economy_sqlmanager;}
+	public net.illusiononline.EmeraldEconomy.backends.MySQLManager getEconomySQLManager(){return economy_sqlmanager;}
 }
 
