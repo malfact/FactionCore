@@ -20,6 +20,8 @@ permissions:
             factioncore.faction.kick.override: true
             factioncore.faction.chat.other: true
             factioncore.faction.home.set.other: true
+            factioncore.faction.ally.override: true
+            factioncore.faction.enemy.override: true
             factioncore.faction.home.other: true
             factioncore.faction.home.clear.other: true
             factioncore.faction.money.check.other: true
@@ -54,7 +56,9 @@ permissions:
             factioncore.faction.join.override: true
             factioncore.faction.invite: true
             factioncore.faction.ally: true
+            factioncore.faction.ally.override: true
             factioncore.faction.enemy: true
+            factioncore.faction.enemy.override: true
             factioncore.faction.kick: true
             factioncore.faction.kick.override: true
             factioncore.faction.chat: true
@@ -98,9 +102,15 @@ permissions:
     factioncore.faction.ally:
         description: Ally a faction.
         default: true
+    factioncore.faction.ally.override:
+        description: Ally a faction.
+        default: op
     factioncore.faction.enemy:
         description: Enemy a faction.
         default: true
+    factioncore.faction.enemy.override:
+        description: Enemy a faction.
+        default: op
     factioncore.faction.kick:
         description: Kick a player from a faction.
         default: true

@@ -29,7 +29,7 @@ public class FactionManager {
 	
 	public boolean isFactionAdmin(String player, String faction){
 		String list[] = (FactionCore.getSqlManager().getListedUnit(faction, "owner")+" "+FactionCore.getSqlManager().getListedUnit(faction, "admin")).split(" ");
-		for (int i=0;i <= list.length-1;i++){
+		for (int i=0;i < list.length;i++){
 			if (list[i].trim().equalsIgnoreCase(player)){
 				return true;
 			}
@@ -39,8 +39,28 @@ public class FactionManager {
 	
 	public boolean isFactionOwner(String player, String faction){
 		String list[] = (FactionCore.getSqlManager().getListedUnit(faction, "owner")).split(" ");
-		for (int i=0;i <= list.length-1;i++){
+		for (int i=0;i < list.length;i++){
 			if (list[i].trim().equalsIgnoreCase(player)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isFactionAlly(String fac1, String fac2){
+		String list[] = (FactionCore.getSqlManager().getListedUnit(fac1, "ally")).split(" ");
+		for (int i=0;i < list.length;i++){
+			if (list[i].trim().equalsIgnoreCase(fac2)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isFactionEnemy(String fac1, String fac2){
+		String list[] = (FactionCore.getSqlManager().getListedUnit(fac1, "enemy")).split(" ");
+		for (int i=0;i < list.length;i++){
+			if (list[i].trim().equalsIgnoreCase(fac2)){
 				return true;
 			}
 		}
@@ -469,6 +489,214 @@ public class FactionManager {
 			} else {
 				player.sendMessage(ChatColor.RED+"You don't have permission to clear the faction's home!");
 			}	
+		}
+		return false;
+	}
+
+	public boolean addAlly(Player player, String name){
+		if (name == null) name = "";
+		if (player == null || name.equalsIgnoreCase("")) return false;
+		
+		String faction = FactionCore.getSqlManager().getFactionbyMember(player.getName());
+		if (faction.equalsIgnoreCase("")){
+			player.sendMessage(ChatColor.RED+"You are not in a faction!");
+			
+
+		}
+		String faction2 = FactionCore.getSqlManager().getFaction(name);
+		if (faction2.equalsIgnoreCase("")){
+			player.sendMessage(ChatColor.RED+"Invalid faction!");
+		}
+		
+		if(isFactionEnemy(faction, faction2)){
+			player.sendMessage(ChatColor.RED+"Your faction is enemies with that faction!");
+			return false;
+		}
+		if(isFactionEnemy(faction2, faction)){
+			player.sendMessage(ChatColor.RED+"That faction is enemies with your faction!");
+			return false;
+		}
+		if(isFactionAlly(faction, faction2)){
+			player.sendMessage(ChatColor.RED+"Your faction is already allied with that faction!");
+			return false;
+		}
+		
+		boolean can_add = isFactionAdmin(player.getName(), faction2);
+		
+		if (can_add || player.hasPermission(permissions.getPermission("allyoverride"))){
+			
+			String confirm = playerconfirm.getConfirmation(player.getName());
+			if (confirm.equalsIgnoreCase("ally "+faction2)) {
+				boolean w = FactionCore.getSqlManager().addListedUnit(faction, "ally", faction2);
+				boolean w2 = FactionCore.getSqlManager().addListedUnit(faction2, "ally", faction);
+				if (w && w2) {
+					player.sendMessage(ChatColor.AQUA+"You have joined "+faction+"!");
+					Player players[] = plugin.getServer().getOnlinePlayers();
+					for (int i = 0;i < players.length;i++){
+						if (isFactionMember(players[i].getName(), faction) && players[i] != player){
+							players[i].sendMessage(ChatColor.AQUA+faction2+" is now your faction's ally!");
+						}
+						if (isFactionMember(players[i].getName(), faction2)){
+							players[i].sendMessage(ChatColor.AQUA+faction+" is now your faction's ally!");
+						}
+					}
+					return true;
+				}
+				return false;
+			}
+			
+			player.sendMessage(ChatColor.AQUA+"You have requested "+faction2+" to be your faction's ally!");
+
+			Player players[] = plugin.getServer().getOnlinePlayers();
+			for (int i = 0;i < players.length;i++){
+				if (isFactionAdmin(players[i].getName(), faction2)){
+					players[i].sendMessage(ChatColor.AQUA+faction+" has requested to be your faction's ally!");
+					player.sendMessage(ChatColor.GOLD+"Say \"/faction ally "+faction+"\" to ally their faction!");
+					playerconfirm.addConfirmation(player.getName(), "ally "+faction);
+				}
+			}
+			return true;
+		} else {
+			player.sendMessage(ChatColor.RED+"You don't have permission to add a faction ally!");
+		}
+		
+		return false;
+	}
+
+	public boolean removeAlly(Player player, String name){
+		if (name == null) name = "";
+		if (player == null || name.equalsIgnoreCase("")) return false;
+		
+		String faction = FactionCore.getSqlManager().getFactionbyMember(player.getName());
+		if (faction.equalsIgnoreCase("")){
+			player.sendMessage(ChatColor.RED+"You are not in a faction!");
+		}
+		String faction2 = FactionCore.getSqlManager().getFaction(name);
+		if (faction2.equalsIgnoreCase("")){
+			player.sendMessage(ChatColor.RED+"Invalid faction!");
+		}
+		if(!isFactionAlly(faction, faction2)){
+			player.sendMessage(ChatColor.RED+"Your faction isn't allied with that faction!");
+			return false;
+		}
+		
+		boolean can_remove = isFactionAdmin(player.getName(), faction2);
+		
+		if (can_remove || player.hasPermission(permissions.getPermission("allyoverride"))){
+			boolean w = FactionCore.getSqlManager().removeListedUnit(faction, "enemy", faction2);
+			if (w) {
+				player.sendMessage(ChatColor.AQUA+"You have remove "+faction2+" as your faction's ally!");
+	
+				Player players[] = plugin.getServer().getOnlinePlayers();
+				for (int i = 0;i < players.length;i++){
+					if (isFactionMember(players[i].getName(), faction) && players[i] != player){
+						players[i].sendMessage(ChatColor.AQUA+faction2+" is no longer your faction's ally!");
+					}
+					if (isFactionMember(players[i].getName(), faction2)){
+						players[i].sendMessage(ChatColor.RED+faction+" is no longer your faction's ally!");
+					}
+				}
+			} else {
+				player.sendMessage(ChatColor.RED+"Failed to remove faction ally!");
+			}
+		} else {
+			player.sendMessage(ChatColor.RED+"You don't have permission to add a faction ally!");
+		}
+		
+		return false;
+	}
+	
+	public boolean addEnemy(Player player, String name){
+		if (name == null) name = "";
+		if (player == null || name.equalsIgnoreCase("")) return false;
+		
+		String faction = FactionCore.getSqlManager().getFactionbyMember(player.getName());
+		if (faction.equalsIgnoreCase("")){
+			player.sendMessage(ChatColor.RED+"You are not in a faction!");
+		}
+		String faction2 = FactionCore.getSqlManager().getFaction(name);
+		if (faction2.equalsIgnoreCase("")){
+			player.sendMessage(ChatColor.RED+"Invalid faction!");
+		}
+		
+		if(isFactionAlly(faction, faction2)){
+			player.sendMessage(ChatColor.RED+"Your faction is allied with that faction!");
+			return false;
+		}
+		if(isFactionAlly(faction2, faction)){
+			player.sendMessage(ChatColor.RED+"That faction is allied with your faction!");
+			return false;
+		}
+		if(isFactionEnemy(faction, faction2)){
+			player.sendMessage(ChatColor.RED+"Your faction is already enemies with that faction!");
+			return false;
+		}
+		
+		boolean can_add = isFactionAdmin(player.getName(), faction2);
+		
+		if (can_add || player.hasPermission(permissions.getPermission("enemyoverride"))){
+			boolean w = FactionCore.getSqlManager().addListedUnit(faction, "enemy", faction2);
+			if (w) {
+				player.sendMessage(ChatColor.AQUA+faction2+" is now your faction's enemy!");
+				
+				Player players[] = plugin.getServer().getOnlinePlayers();
+				for (int i = 0;i < players.length;i++){
+					if (isFactionMember(players[i].getName(), faction) && players[i] != player){
+						players[i].sendMessage(ChatColor.AQUA+faction2+" is now your faction's enemy!");
+					}
+					if (isFactionMember(players[i].getName(), faction2)){
+						players[i].sendMessage(ChatColor.RED+faction+" has declared your faction as an enemy!");
+					}
+				}
+				return true;
+			} else {
+				player.sendMessage(ChatColor.RED+"Failed to add faction enemy!");
+			}
+		} else {
+			player.sendMessage(ChatColor.RED+"You don't have permission to add a faction enemy!");
+		}
+		return false;
+	}
+
+	public boolean removeEnemy(Player player, String name){
+		if (name == null) name = "";
+		if (player == null || name.equalsIgnoreCase("")) return false;
+		
+		String faction = FactionCore.getSqlManager().getFactionbyMember(player.getName());
+		if (faction.equalsIgnoreCase("")){
+			player.sendMessage(ChatColor.RED+"You are not in a faction!");
+		}
+		String faction2 = FactionCore.getSqlManager().getFaction(name);
+		if (faction2.equalsIgnoreCase("")){
+			player.sendMessage(ChatColor.RED+"Invalid faction!");
+		}
+		if(!isFactionEnemy(faction, faction2)){
+			player.sendMessage(ChatColor.RED+"Your faction isn't enemies with that faction!");
+			return false;
+		}
+		
+		boolean can_remove = isFactionAdmin(player.getName(), faction2);
+		
+		if (can_remove || player.hasPermission(permissions.getPermission("enemyoverride"))){
+			boolean w = FactionCore.getSqlManager().removeListedUnit(faction, "enemy", faction2);
+			if (w) {
+				player.sendMessage(ChatColor.AQUA+faction2+" is no longer your faction's enemy!");
+				
+				Player players[] = plugin.getServer().getOnlinePlayers();
+				for (int i = 0;i < players.length;i++){
+					if (isFactionMember(players[i].getName(), faction) && players[i] != player){
+						players[i].sendMessage(ChatColor.AQUA+faction2+" is no longer your faction's enemy!");
+					}
+					if (isFactionMember(players[i].getName(), faction2)){
+						players[i].sendMessage(ChatColor.RED+faction+" has undeclared your faction as an enemy!");
+					}
+				}
+				return true;
+			} else {
+				player.sendMessage(ChatColor.RED+"Failed to remove faction enemy!");
+			}
+		} else {
+			player.sendMessage(ChatColor.RED+"You don't have permission to remove a faction enemy!");
 		}
 		return false;
 	}

@@ -160,13 +160,41 @@ public class FactionCommandExecutor implements CommandExecutor{
 							return true;
 						}
 					} else if (args[0].equalsIgnoreCase("ally")){
-						
+						if (!sender.hasPermission(permissions.getPermission("ally")))
+							return false;
+						if (player == null)
+							sender.sendMessage("This command requires a player index!");
+						else {
+							FactionCore.getFactionManager().addAlly(player, args[1]);
+							return true;
+						}
 					} else if (args[0].equalsIgnoreCase("unally")){
-						
+						if (!sender.hasPermission(permissions.getPermission("ally")))
+							return false;
+						if (player == null)
+							sender.sendMessage("This command requires a player index!");
+						else {
+							FactionCore.getFactionManager().removeAlly(player, args[1]);
+							return true;
+						}
 					} else if (args[0].equalsIgnoreCase("enemy")){
-						
+						if (!sender.hasPermission(permissions.getPermission("enemy")))
+							return false;
+						if (player == null)
+							sender.sendMessage("This command requires a player index!");
+						else {
+							FactionCore.getFactionManager().addEnemy(player, args[1]);
+							return true;
+						}
 					} else if (args[0].equalsIgnoreCase("unenemy")){
-						
+						if (!sender.hasPermission(permissions.getPermission("enemy")))
+							return false;
+						if (player == null)
+							sender.sendMessage("This command requires a player index!");
+						else {
+							FactionCore.getFactionManager().removeEnemy(player, args[1]);
+							return true;
+						}
 					} else if (args[0].equalsIgnoreCase("kick")){
 						if (!sender.hasPermission(permissions.getPermission("kick")))
 							return false;

@@ -15,7 +15,9 @@ public class PermissionHashMap {
 		permissions.put("joinoverride", 	"factioncore.faction.join.override");
 		permissions.put("invite", 			"factioncore.faction.invite");
 		permissions.put("ally", 			"factioncore.faction.ally");
+		permissions.put("allyoverride", 	"factioncore.faction.ally.override");
 		permissions.put("enemy", 			"factioncore.faction.enemy");
+		permissions.put("enemyoverride", 	"factioncore.faction.enemy.override");
 		permissions.put("kick", 			"factioncore.faction.kick");
 		permissions.put("kickoverride",		"factioncore.faction.kick.override");
 		permissions.put("chat", 			"factioncore.faction.chat");
