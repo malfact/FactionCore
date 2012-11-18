@@ -49,7 +49,7 @@ public class FactionCommandExecutor implements CommandExecutor{
 											ChatColor.RED+"/faction chat <join/leave> [name]\n" +
 											ChatColor.GREEN+"/faction sethome [name]\n" +
 											ChatColor.GREEN+"/faction home [name]\n" +
-											ChatColor.RED+"/faction clearhome [name]\n" +
+											ChatColor.GREEN+"/faction clearhome [name]\n" +
 											ChatColor.RED+"/faction money [faction]\n" +
 											ChatColor.RED+"/faction sendmoney [faction] <#>\n" +
 											ChatColor.RED+"/faction takemoney [faction] <#>\n" +
@@ -102,7 +102,14 @@ public class FactionCommandExecutor implements CommandExecutor{
 							return true;
 						}
 					} else if (args[0].equalsIgnoreCase("clearhome")){
-						
+						if (!sender.hasPermission(permissions.getPermission("home")))
+							return false;
+						if (player == null)
+							sender.sendMessage("This command requires a player index!");
+						else {
+							FactionCore.getFactionManager().clearHome(player, "");
+							return true;
+						}
 					} else if (args[0].equalsIgnoreCase("money")){
 						
 					} else {
@@ -190,7 +197,14 @@ public class FactionCommandExecutor implements CommandExecutor{
 							return true;
 						}
 					} else if (args[0].equalsIgnoreCase("clearhome")){
-						
+						if (!sender.hasPermission(permissions.getPermission("home")))
+							return false;
+						if (player == null)
+							FactionCore.getFactionManager().clearHome(null, args[1]);
+						else {
+							FactionCore.getFactionManager().clearHome(player, args[1]);
+							return true;
+						}
 					} else if (args[0].equalsIgnoreCase("money")){
 						
 					} else if (args[0].equalsIgnoreCase("sendmoney")){

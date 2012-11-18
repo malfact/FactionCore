@@ -432,6 +432,47 @@ public class FactionManager {
 		return true;
 	}
 	
+	public boolean clearHome(Player player, String name){
+		if (name == null) name = "";
+		
+		if (player == null && name.equalsIgnoreCase("")) return false;
+		
+		String faction = name;
+		
+		if (player == null){
+			boolean w = FactionCore.getSqlManager().clearFlag(faction, "home");
+			if (w) {
+				plugin.getServer().getConsoleSender().sendMessage("Faction "+faction+"'s home cleared!");
+				return true;
+			} else
+				return false;
+		} else {
+			
+			if (name.equalsIgnoreCase(""))
+				faction = FactionCore.getSqlManager().getFactionbyMember(player.getName());
+			else 
+				faction = FactionCore.getSqlManager().getFaction(name);
+			
+			if (faction.equalsIgnoreCase("")){
+				player.sendMessage(ChatColor.RED+"Invalid faction!");
+				return false;
+			}
+			
+			if (isFactionAdmin(player.getName(), faction) || player.hasPermission(permissions.getPermission("clearhomeother"))){
+				boolean w = FactionCore.getSqlManager().clearFlag(faction, "home");
+				if (w) {
+					player.sendMessage(ChatColor.AQUA+"Faction "+faction+"'s home cleared!");
+					return true;
+				} else {
+					player.sendMessage(ChatColor.RED+"Failed clear the faction's home!");
+				}
+			} else {
+				player.sendMessage(ChatColor.RED+"You don't have permission to clear the faction's home!");
+			}	
+		}
+		return false;
+	}
+	
 	private boolean containsIllegalCharacters(String string){
 		String allowedcharacters[] = {
 				"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r",
