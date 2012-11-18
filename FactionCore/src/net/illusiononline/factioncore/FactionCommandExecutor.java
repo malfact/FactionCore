@@ -39,7 +39,7 @@ public class FactionCommandExecutor implements CommandExecutor{
 											ChatColor.GREEN+"/faction create <name>\n" +
 											ChatColor.GREEN+"/faction disband [name]\n" +
 											ChatColor.GREEN+"/faction join <name>\n" +
-											ChatColor.GREEN+"/faction leave [name]\n" +
+											ChatColor.GREEN+"/faction leave\n" +
 											ChatColor.GREEN+"/faction invite <name>\n" +
 											ChatColor.RED+"/faction ally <name>\n" +
 											ChatColor.RED+"/faction unally <name>\n" +
@@ -56,8 +56,8 @@ public class FactionCommandExecutor implements CommandExecutor{
 											ChatColor.RED+"/faction flag [faction] <flag> [option]");
 						return true;
 					} else if (args[0].equalsIgnoreCase("list")){
-						String data[][] = FactionCore.getSqlManager().getFactionList(50);
-						sender.sendMessage(ChatColor.AQUA+"|50 Factions|");
+						String data[][] = FactionCore.getSqlManager().getFactionList(10);
+						sender.sendMessage(ChatColor.AQUA+"|10 Factions|");
 						int i = 0;
 						while (i<50){
 							if(data[i][0].equalsIgnoreCase(".")) break;
@@ -80,7 +80,7 @@ public class FactionCommandExecutor implements CommandExecutor{
 						if (player == null)
 							sender.sendMessage("This command requires a player index!");
 						else {
-							FactionCore.getFactionManager().leaveFaction(player, "");
+							FactionCore.getFactionManager().leaveFaction(player);
 							return true;
 						}
 					} else if (args[0].equalsIgnoreCase("sethome")){
@@ -141,15 +141,6 @@ public class FactionCommandExecutor implements CommandExecutor{
 							sender.sendMessage("This command requires a player index!");
 						else {
 							FactionCore.getFactionManager().joinFaction(player, args[1]);
-							return true;
-						}
-					} else if (args[0].equalsIgnoreCase("leave")){
-						if (!sender.hasPermission(permissions.getPermission("leave")))
-							return false;
-						if (player == null)
-							sender.sendMessage("This command requires a player index!");
-						else {
-							FactionCore.getFactionManager().leaveFaction(player, args[1]);
 							return true;
 						}
 					} else if (args[0].equalsIgnoreCase("invite")){
@@ -214,6 +205,7 @@ public class FactionCommandExecutor implements CommandExecutor{
 							sender.sendMessage(ChatColor.RED+"Use a number value!");
 							return true;
 						}
+						if (numb <= 0) numb = 10;
 						String data[][] = FactionCore.getSqlManager().getFactionList(numb);
 						sender.sendMessage(ChatColor.AQUA+"|"+numb+" Factions|");
 						int i = 0;

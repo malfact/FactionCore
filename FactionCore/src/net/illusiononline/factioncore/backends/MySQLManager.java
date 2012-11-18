@@ -166,7 +166,7 @@ public class MySQLManager {
 						ResultSet result = sql.query("SELECT * FROM Faction_Data WHERE name='"+name+"' AND flag='"+flag+"'");
 						if (result.next()) {
 								sql.query("UPDATE Faction_Data " +
-										  "SET data="+option+" " +
+										  "SET data='"+option+"' " +
 										  "WHERE name='"+name+"' " +
 										  "AND flag='"+flag+"'");
 								result.close();
@@ -179,7 +179,7 @@ public class MySQLManager {
 						sql.close();
 						return true;
 					} catch (SQLException ex) {
-						plugin.getLogger().severe("[FactionCore] "+ex);
+						plugin.getLogger().severe(""+ex);
 					}
 				}
 			} catch (SQLException e) {
@@ -289,6 +289,31 @@ public class MySQLManager {
 	}
 	
 	public String getFaction(String name){
+		String faction = "";
+		try {
+			sql.open();
+			if (sql.checkTable("Faction_Data")){
+				try {
+					ResultSet result = sql.query("SELECT * FROM Faction_Data WHERE name='"+name+"' AND data='*';");
+					if (result.next()) {
+							faction = result.getString("name");
+							result.close();
+							sql.close();
+							return faction;
+					}
+					result.close();
+				} catch (SQLException ex) {
+					plugin.getLogger().severe("[FactionCore] "+ex);
+				}
+			}
+		} catch (SQLException e) {
+			plugin.getLogger().info(e.getMessage());
+		}
+		sql.close();
+		return faction;
+	}
+	
+	public String getFactionbyMember(String name){
 		String faction = "";
 		try {
 			sql.open();
