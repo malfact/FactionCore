@@ -1,6 +1,7 @@
 package net.illusiononline.factioncore;
 
 import java.util.logging.Logger;
+import listeners.EntityListener;
 import org.bukkit.plugin.java.JavaPlugin;
 import net.illusiononline.EmeraldEconomy.EmeraldEconomy;
 import net.illusiononline.factioncore.backends.MySQLManager;
@@ -31,6 +32,7 @@ public class FactionCore extends JavaPlugin{
 		
 		sqlmanager = new MySQLManager(this);
 		factionmanager = new FactionManager(this);
+		this.getServer().getPluginManager().registerEvents(new EntityListener(this), this);
 		getCommand("faction").setExecutor(new FactionCommandExecutor());
 		
 		if (sqlmanager.getMySQL() == null)
