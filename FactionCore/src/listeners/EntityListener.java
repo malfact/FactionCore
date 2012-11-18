@@ -30,6 +30,9 @@ public class EntityListener implements Listener{
 		String faction1 = FactionCore.getSqlManager().getFactionbyMember(player_e.getName());
 		String faction2 = FactionCore.getSqlManager().getFactionbyMember(player_d.getName());
 		
+		if (faction1.equalsIgnoreCase("") || faction2.equalsIgnoreCase(""))
+			return;
+		
 		if (faction1.equalsIgnoreCase(faction2)){
 			player_d.sendMessage(ChatColor.RED+"You can't attack someone in your faction!");
 			event.setCancelled(true);

@@ -141,8 +141,8 @@ public class FactionManager {
 				player.sendMessage(ChatColor.RED+"Faction name must be longer than 5 characters!");
 				return false;
 			}
-			if (containsIllegalCharacters(name)) {
-				player.sendMessage(ChatColor.RED+"Faction name must not have illegal characters!");
+			if (name.length() > 25) {
+				player.sendMessage(ChatColor.RED+"Faction name must be shorter than 25 characters!");
 				return false;
 			}
 			player.sendMessage(ChatColor.GOLD+"Say \"/faction create "+name+"\" again to create the faction!\n" +
@@ -697,25 +697,6 @@ public class FactionManager {
 			}
 		} else {
 			player.sendMessage(ChatColor.RED+"You don't have permission to remove a faction enemy!");
-		}
-		return false;
-	}
-	
-	private boolean containsIllegalCharacters(String string){
-		String allowedcharacters[] = {
-				"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r",
-				"s","t","u","v","w","x","y","z","0","1","2","3","4","5","6","7","8","9"};
-		String chars[] = string.split("");
-		for (int i=0; i < chars.length; i++) {
-			boolean allowed = false;
-			for (int j=0; j < allowedcharacters.length; j++){
-				if (chars[i].equalsIgnoreCase(allowedcharacters[j])){
-					allowed = true;
-					break;
-				}
-			}
-			if (!allowed)
-				return true;
 		}
 		return false;
 	}
